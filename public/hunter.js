@@ -129,6 +129,9 @@
 
 	$.BarragePool.prototype.addBarrage = function(option) {
 		var barrage = new $.Barrage(option, this);
+		barrage.$el.css({
+			'border': '1px solid #00d200'
+		})
 		this.barrages.push(barrage);
 		if (this.state = 'play') {
 			barrage.play();

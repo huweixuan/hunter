@@ -32,9 +32,14 @@
 			'position': 'normal'
 		}
 
-		var _opt = this.option = $.extend({}, defaultOption, option);
-		var _pool = this.pool = pool;
+		this.option = $.extend({}, defaultOption, option);
+		this.pool = pool;
+		this.createEl();
+	}
 
+	$.Barrage.prototype.createEl = function() {
+		var _opt = this.option;
+		var _pool = this.pool;
 		this.$el = $('<li></li>').text(_opt.text).css({
 			'color': _opt.color,
 			'fontSize': _opt.fontSize,
@@ -43,8 +48,6 @@
 			'top': '10px',
 			'left': _pool.width()
 		}).hide().appendTo(_pool.$el);
-
-		return this;
 	}
 
 	$.Barrage.prototype.play = function(currentTime) {
@@ -53,7 +56,7 @@
 		var interval = self.option.time - currentTime;
 		var el = self.$el;
 		if (interval < 0) {
-			return
+			return;
 		}
 		self.timer = setTimeout(function() {
 			el.show().animate({
@@ -68,28 +71,24 @@
 		}
 	}
 
-	$.BarragePool = function(video, barrageData) {
+	$.BarragePool = function(video, url) {
 		var self = this;
 		self.barrages = [];
 		self.video = video;
-		var offset = video.offset();
-		self.$el = $('<ul></ul>').css({
-			'position': 'absolute',
-			'overflow': 'hidden',
-			'top': offset.top,
-			'left': offset.left,
-			'width': video.width(),
-			'height': video.height() - 50
-		});
-
 		self.createPoolEl(video);
-		if (!isArray(barrageData)) {
-			return;
-		}
-		$.each(barrageData, function(index, option) {
-			self.barrages.push(new $.Barrage(option, self));
+		self.state = 'pause';
+
+		$.ajax({
+			url: url,
+			type: 'GET',
+			dataType: 'json',
+			success: function(data) {
+				$.each(data, function(index, option) {
+					self.barrages.push(new $.Barrage(option, self));
+				});
+			},
+			error: function() {}
 		});
-		return this;
 	}
 
 	$.BarragePool.prototype.width = function() {
@@ -101,32 +100,107 @@
 	}
 
 	$.BarragePool.prototype.createPoolEl = function(video) {
+		var offset = video.offset();
+		this.$el = $('<ul></ul>').css({
+			'position': 'absolute',
+			'overflow': 'hidden',
+			'top': offset.top,
+			'left': offset.left,
+			'width': video.width(),
+			'height': video.height() - 50
+		});
 		video.after(this.$el);
 	}
 
 	$.BarragePool.prototype.playBarrage = function() {
 		var currentTime = this.video[0].currentTime;
+		this.state = 'play';
 		$.each(this.barrages, function(index, barrage) {
 			barrage.play(currentTime);
 		});
 	}
 
 	$.BarragePool.prototype.pauseBarrage = function() {
+		this.state = 'pause';
 		$.each(this.barrages, function(index, barrage) {
 			barrage.pause();
 		});
 	}
 
+	$.BarragePool.prototype.addBarrage = function(option) {
+		var barrage = new $.Barrage(option, this);
+		this.barrages.push(barrage);
+		if (this.state = 'play') {
+			barrage.play();
+		}
+	}
+
+	$.BarrageSender = function(video, url, barragePool) {
+		this.url = url;
+		this.video = video;
+		this.pool = barragePool;
+
+		this.createSenderEl(video);
+		this.bindEvent();
+	}
+
+	$.BarrageSender.prototype.createSenderEl = function(video) {
+		var offset = video.offset();
+		this.$el = $('<div><input type="text" placeholder="请输入弹幕～"><button type="button">发送da☆ze～</button></div>').css({
+			'position': 'absolute',
+			'top': offset.top + video.height() + 10,
+			'left': offset.left,
+			'width': video.width()
+		});
+		video.after(this.$el);
+	}
+
+	$.BarrageSender.prototype.bindEvent = function() {
+		var self = this;
+		var button = self.button = $('button', self.$el);
+		var input = self.input = $('input', self.$el);
+		button.on('click', function() {
+			self.sendBarrage();
+		});
+		input.on('keypress', function(e) {
+			if (e.keyCode == 13) { // enter 键
+				self.sendBarrage();
+			}
+		});
+	}
+
+	$.BarrageSender.prototype.sendBarrage = function() {
+		var self = this;
+		var barrage = {
+			'text': self.input.val(),
+			'time': self.video[0].currentTime + 3 // 弹幕延迟3秒
+		};
+		$.ajax({
+			url: self.url,
+			type: 'POST',
+			data: barrage,
+			traditional: true,
+			dataType: 'json',
+			success: function(data) {
+				self.pool.addBarrage(barrage);
+			},
+			error: function() {}
+		});
+	}
+
 	$.fn.extend({
-		hunter: function(barrageData) {
-			var bPool = new $.BarragePool(this, barrageData);
+		hunter: function(getUrl, sendUrl) {
+			var bPool = new $.BarragePool(this, getUrl);
 			this.on('play', function() {
 				bPool.playBarrage();
 			});
 			this.on('pause', function() {
 				bPool.pauseBarrage();
 			});
-			return this;
+
+			var bSender = new $.BarrageSender(this, sendUrl, bPool);
+
+			return $;
 		}
 	});
 }));

@@ -43,6 +43,7 @@
 		this.$el = $('<li></li>').text(_opt.text).css({
 			'color': _opt.color,
 			'fontSize': _opt.fontSize,
+			'padding': '0 2px',
 			'position': 'absolute',
 			'whiteSpace': 'nowrap',
 			'top': '10px',
@@ -184,11 +185,10 @@
 			data: barrage,
 			traditional: true,
 			dataType: 'json',
-			success: function(data) {
-				self.pool.addBarrage(barrage);
-			},
+			success: function(data) {},
 			error: function() {}
 		});
+		self.pool.addBarrage(barrage);
 		self.input.val('');
 	}
 

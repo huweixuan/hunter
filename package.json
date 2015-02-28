@@ -1,0 +1,20 @@
+{
+  "name": "hunter",
+  "version": "0.1.1",
+  "description": "HTML5弹幕视频播放器",
+  "repository": "git@github.com:huweixuan/hunter.git",
+  "keywords": [
+    "HTML5",
+    "弹幕",
+    "播放器"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "huweixuan",
+    "email": "weixuan.hu@dianping.com"
+  },
+  "bugs": {
+    "url": "https://github.com/huweixuan/hunter/issues"
+  },
+  "homepage": "https://github.com/huweixuan/hunter"
+}

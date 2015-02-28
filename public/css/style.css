@@ -47,7 +47,7 @@ a:active {
 
 button {
   border: 0;
-  background-color: #fe6c00;
+  background-color: #ff7720;
   color: #fff;
   width: 120px;
   height: 40px;
@@ -56,6 +56,11 @@ button {
   padding: 6px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #fa5e00;
 }
 
 input {

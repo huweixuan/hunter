@@ -186,6 +186,7 @@
 			},
 			error: function() {}
 		});
+		self.input.val('');
 	}
 
 	$.fn.extend({

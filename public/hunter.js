@@ -133,7 +133,7 @@
 			'border': '1px solid #00d200'
 		})
 		this.barrages.push(barrage);
-		if (this.state = 'play') {
+		if (this.state == 'play') {
 			barrage.play();
 		}
 	}

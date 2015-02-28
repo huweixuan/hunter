@@ -16,28 +16,26 @@ app.post('/send', function(req, res) {
 
 // 获取弹幕
 app.get('/get', function(req, res) {
-	res.render('message', {
-		message: [{
-			'time': 5,
-			'text': 'hello world'
-		}, {
-			'time': 10,
-			'text': '你好 世界',
-			'color': 'red',
-			'fontSize': '22px'
-		}, {
-			'time': 15,
-			'text': '这是一个',
-			'color': 'green'
-		}, {
-			'time': 20,
-			'text': 'HTML5弹幕视频播放器',
-			'color': 'blue'
-		}, {
-			'time': 25,
-			'text': '样例'
-		}]
-	});
+	res.send([{
+		'time': 5,
+		'text': 'hello world'
+	}, {
+		'time': 10,
+		'text': '你好 世界',
+		'color': 'red',
+		'fontSize': '22px'
+	}, {
+		'time': 15,
+		'text': '这是一个',
+		'color': 'green'
+	}, {
+		'time': 20,
+		'text': 'HTML5弹幕视频播放器',
+		'color': 'blue'
+	}, {
+		'time': 25,
+		'text': '样例'
+	}]);
 });
 
 // 最后，必须有这行代码来使 express 响应 HTTP 请求
